@@ -2,6 +2,7 @@ namespace Unity.Netcode
 {
     internal struct ConnectionRequestMessage : INetworkMessage
     {
+        public ulong HostlessPeerId;
         public ulong ConfigHash;
 
         public byte[] ConnectionData;
@@ -19,10 +20,13 @@ namespace Unity.Netcode
             {
                 writer.WriteValueSafe(ConfigHash);
             }
+            writer.WriteValueSafe(HostlessPeerId);
+
         }
 
         public static void Receive(FastBufferReader reader, in NetworkContext context)
         {
+            NetworkLog.LogInfo("ConnectionRequestMessage.Receive");
             var networkManager = (NetworkManager)context.SystemOwner;
             if (!networkManager.IsServer)
             {
@@ -83,6 +87,12 @@ namespace Unity.Netcode
                     return;
                 }
             }
+
+            if (reader.TryBeginRead(FastBufferWriter.GetWriteSize(message.HostlessPeerId)))
+            {
+                reader.ReadValue(out message.HostlessPeerId);
+            }
+            
             message.Handle(networkManager, context.SenderId);
         }
 
@@ -94,7 +104,7 @@ namespace Unity.Netcode
                 client.ConnectionState = PendingClient.State.PendingApproval;
             }
 
-            if (networkManager.NetworkConfig.ConnectionApproval)
+            if (networkManager.NetworkConfig.ConnectionApproval && !networkManager.IsHostlessPeer)
             {
                 // Note: Delegate creation allocates.
                 // Note: ToArray() also allocates. :(
@@ -108,7 +118,7 @@ namespace Unity.Netcode
             }
             else
             {
-                networkManager.HandleApproval(senderId, networkManager.NetworkConfig.PlayerPrefab != null, null, true, null, null);
+                networkManager.HandleApproval(senderId, networkManager.NetworkConfig.PlayerPrefab != null, null, true, null, null, HostlessPeerId);
             }
         }
     }

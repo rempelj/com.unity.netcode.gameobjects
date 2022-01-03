@@ -64,7 +64,8 @@ namespace Unity.Netcode
 
         public virtual bool ShouldWrite(ulong clientId, bool isServer)
         {
-            return IsDirty() && isServer && CanClientRead(clientId);
+            bool hasAuth = m_NetworkBehaviour.NetworkManager.IsHostlessPeer ? m_NetworkBehaviour.IsOwner : isServer;
+            return IsDirty() && hasAuth && CanClientRead(clientId);
         }
 
         /// <summary>

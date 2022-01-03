@@ -146,7 +146,7 @@ namespace Unity.Netcode
                             }
                         }
 
-                        if (networkManager.IsServer)
+                        if (networkManager.IsServer && !networkManager.IsHostlessPeer)
                         {
                             // we are choosing not to fire an exception here, because otherwise a malicious client could use this to crash the server
                             if (networkManager.NetworkConfig.EnsureNetworkVariableLengthSafety)

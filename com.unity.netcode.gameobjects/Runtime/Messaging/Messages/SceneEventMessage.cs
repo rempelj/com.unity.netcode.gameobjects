@@ -13,6 +13,10 @@ namespace Unity.Netcode
 
         public static void Receive(FastBufferReader reader, in NetworkContext context)
         {
+            if (((NetworkManager) context.SystemOwner).IsHostlessPeer)
+            {
+                return;
+            }
             ((NetworkManager)context.SystemOwner).SceneManager.HandleSceneEvent(context.SenderId, reader);
         }
     }

@@ -41,7 +41,7 @@ namespace Unity.Netcode
         public static void Receive(FastBufferReader reader, in NetworkContext context)
         {
             var networkManager = (NetworkManager)context.SystemOwner;
-            if (!networkManager.IsClient)
+            if (!networkManager.IsClient || networkManager.IsHostlessPeer)
             {
                 return;
             }
