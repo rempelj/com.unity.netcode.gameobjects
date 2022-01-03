@@ -1227,24 +1227,11 @@ namespace Unity.Netcode
             }
         }
 
-        // BEGIN PABC
         public void ConnectHostlessPeer(ulong clientId)
         {
             MessagingSystem.ClientConnected(clientId);
-            //HandleApproval(clientId, NetworkConfig.PlayerPrefab != null, null, true, null, null);
-
-            /*
-            PendingClients.Add(clientId, new PendingClient()
-            {
-                ClientId = clientId,
-                ConnectionState = PendingClient.State.PendingConnection
-            });
-        */
             SendConnectionRequest(clientId);
-
-
         }
-        // END PABC
 
         private void SendConnectionRequest(ulong clientId)
         {
