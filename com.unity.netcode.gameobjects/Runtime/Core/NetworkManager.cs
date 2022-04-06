@@ -1276,7 +1276,17 @@ namespace Unity.Netcode
                     s_TransportConnect.Begin();
 #endif
                     MessagingSystem.ClientConnected(clientId);
-                    if (IsServer)
+
+                    if (IsHostlessPeer)
+                    {
+                        if (NetworkLog.CurrentLogLevel <= LogLevel.Developer)
+                        {
+                            NetworkLog.LogInfo("HostlessPeer Connected");
+                        }
+
+                        // Do not use approval timeout for HostlessPeer
+                    }
+                    else if (IsServer)
                     {
                         if (NetworkLog.CurrentLogLevel <= LogLevel.Developer)
                         {
