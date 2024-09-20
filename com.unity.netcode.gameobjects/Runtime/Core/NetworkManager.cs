@@ -1578,12 +1578,31 @@ namespace Unity.Netcode
 
                 if (createPlayerObject)
                 {
-                    var networkObject = SpawnManager.CreateLocalNetworkObject(false, playerPrefabHash ?? NetworkConfig.PlayerPrefab.GetComponent<NetworkObject>().GlobalObjectIdHash, ownerClientId, null, position, rotation);
+                    if (IsHostlessPeer && SpawnManager.SpawnedObjects.ContainsKey(hostlessPeerId))
+                    {
+                        // Connection was reset or retried
+                        var networkObject = SpawnManager.SpawnedObjects[hostlessPeerId];
 
-                    ulong objId = IsHostlessPeer ? hostlessPeerId : SpawnManager.GetNetworkObjectId();
-                    SpawnManager.SpawnNetworkObjectLocally(networkObject, objId, false, true, ownerClientId, false);
+                        // clean up stale client
+                        var staleClientId = networkObject.OwnerClientId;
+                        var staleClient = m_ConnectedClients[staleClientId];
+                        m_ConnectedClientsList.Remove(staleClient);
+                        m_ConnectedClientIds.Remove(staleClientId);
+                        m_ConnectedClients.Remove(staleClientId);
 
-                    ConnectedClients[ownerClientId].PlayerObject = networkObject;
+                        // setup new client
+                        networkObject.OwnerClientId = ownerClientId;
+                        ConnectedClients[ownerClientId].PlayerObject = networkObject;
+                    }
+                    else
+                    {
+                        var networkObject = SpawnManager.CreateLocalNetworkObject(false, playerPrefabHash ?? NetworkConfig.PlayerPrefab.GetComponent<NetworkObject>().GlobalObjectIdHash, ownerClientId, null, position, rotation);
+
+                        ulong objId = IsHostlessPeer ? hostlessPeerId : SpawnManager.GetNetworkObjectId();
+                        SpawnManager.SpawnNetworkObjectLocally(networkObject, objId, false, true, ownerClientId, false);
+
+                        ConnectedClients[ownerClientId].PlayerObject = networkObject;
+                    }
                 }
 
                 // Server doesn't send itself the connection approved message
