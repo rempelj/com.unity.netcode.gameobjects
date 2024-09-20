@@ -1584,12 +1584,7 @@ namespace Unity.Netcode
                         // clean up stale client
                         var staleNetworkObject = SpawnManager.SpawnedObjects[hostlessPeerId];
                         var staleClientId = staleNetworkObject.OwnerClientId;
-                        var staleClient = m_ConnectedClients[staleClientId];
-                        m_ConnectedClientsList.Remove(staleClient);
-                        m_ConnectedClientIds.Remove(staleClientId);
-                        m_ConnectedClients.Remove(staleClientId);
-                        SpawnManager.SpawnedObjects.Remove(hostlessPeerId);
-
+                        DisconnectClient(staleClientId);
                     }
 
                     var networkObject = SpawnManager.CreateLocalNetworkObject(false, playerPrefabHash ?? NetworkConfig.PlayerPrefab.GetComponent<NetworkObject>().GlobalObjectIdHash, ownerClientId, null, position, rotation);
