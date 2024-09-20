@@ -1588,6 +1588,7 @@ namespace Unity.Netcode
                         m_ConnectedClientsList.Remove(staleClient);
                         m_ConnectedClientIds.Remove(staleClientId);
                         m_ConnectedClients.Remove(staleClientId);
+                        SpawnManager.SpawnedObjects.Remove(hostlessPeerId);
 
                     }
 
