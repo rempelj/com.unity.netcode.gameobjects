@@ -1576,19 +1576,19 @@ namespace Unity.Netcode
                 m_ConnectedClientsList.Add(client);
                 m_ConnectedClientIds.Add(client.ClientId);
 
-                if (createPlayerObject)
+                if (createPlayerObject) 
                 {
                     if (IsHostlessPeer && SpawnManager.SpawnedObjects.ContainsKey(hostlessPeerId))
                     {
                         // Connection was reset or retried
                         // clean up stale client
-                        var staleNetworkObject = SpawnManager.SpawnedObjects[hostlessPeerId];
-                        var staleClientId = staleNetworkObject.OwnerClientId;
-                        var staleClient = m_ConnectedClients[staleClientId];
-                        m_ConnectedClientsList.Remove(staleClient);
-                        m_ConnectedClientIds.Remove(staleClientId);
-                        m_ConnectedClients.Remove(staleClientId);
-                        SpawnManager.SpawnedObjects.Remove(hostlessPeerId);
+                        // var staleNetworkObject = SpawnManager.SpawnedObjects[hostlessPeerId];
+                        // var staleClientId = staleNetworkObject.OwnerClientId;
+                        // var staleClient = m_ConnectedClients[staleClientId];
+                        // m_ConnectedClientsList.Remove(staleClient);
+                        // m_ConnectedClientIds.Remove(staleClientId);
+                        // m_ConnectedClients.Remove(staleClientId);
+                        // SpawnManager.SpawnedObjects.Remove(hostlessPeerId);
 
                     }
 
