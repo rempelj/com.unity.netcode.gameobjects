@@ -1231,6 +1231,7 @@ namespace Unity.Netcode
         {
             MessagingSystem.ClientConnected(clientId);
             SendConnectionRequest(clientId);
+            StartCoroutine(ApprovalTimeout(clientId));
         }
 
         private void SendConnectionRequest(ulong clientId)
