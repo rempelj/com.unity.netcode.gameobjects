@@ -11,11 +11,12 @@ namespace Unity.Netcode
 
         public static void Receive(FastBufferReader reader, in NetworkContext context)
         {
-            var networkManager = (NetworkManager)context.SystemOwner;
+            var networkManager = (NetworkManager) context.SystemOwner;
             if (!networkManager.IsClient)
             {
                 return;
             }
+
             reader.ReadValueSafe(out DestroyObjectMessage message);
             message.Handle(context.SenderId, networkManager, reader.Length);
         }
@@ -28,9 +29,15 @@ namespace Unity.Netcode
                 // while we still have access to the network ID, otherwise the log message will be less useful.
                 if (NetworkLog.CurrentLogLevel <= LogLevel.Normal)
                 {
-                    NetworkLog.LogWarning($"Trying to destroy {nameof(NetworkObject)} #{NetworkObjectId} but it does not exist in {nameof(NetworkSpawnManager.SpawnedObjects)} anymore!");
+                    NetworkLog.LogWarning(
+                        $"Trying to destroy {nameof(NetworkObject)} #{NetworkObjectId} but it does not exist in {nameof(NetworkSpawnManager.SpawnedObjects)} anymore!");
                 }
 
+                return;
+            }
+
+            if (networkObject.OwnerClientId != senderId)
+            {
                 return;
             }
 
