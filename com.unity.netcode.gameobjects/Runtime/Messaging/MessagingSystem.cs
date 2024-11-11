@@ -325,6 +325,12 @@ namespace Unity.Netcode
                         continue;
                     }
 
+                    if (!m_SendQueues.ContainsKey(clientId))
+                    {
+                        // client disconnected or server shutdown before message was sent
+                        continue;
+                    }
+
                     for (var hookIdx = 0; hookIdx < m_Hooks.Count; ++hookIdx)
                     {
                         m_Hooks[hookIdx].OnBeforeSendMessage(clientId, typeof(TMessageType), delivery);
