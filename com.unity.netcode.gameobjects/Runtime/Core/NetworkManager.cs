@@ -1566,6 +1566,11 @@ namespace Unity.Netcode
         {
             Debug.Log($"HandleApproval - IsHostlessPeer: {IsHostlessPeer}, hostlessPeerId: {hostlessPeerId}, LocalHostlessPeerId: {LocalHostlessPeerId}");
 
+            if (IsHostlessPeer && SpawnManager.SpawnedObjects.ContainsKey(hostlessPeerId))
+            {
+               return;
+            }
+
             if (approved)
             {
                 // Inform new client it got approved
@@ -1578,10 +1583,6 @@ namespace Unity.Netcode
 
                 if (createPlayerObject) 
                 {
-                    if (IsHostlessPeer && SpawnManager.SpawnedObjects.ContainsKey(hostlessPeerId))
-                    {
-                       return;
-                    }
 
                     var networkObject = SpawnManager.CreateLocalNetworkObject(false, playerPrefabHash ?? NetworkConfig.PlayerPrefab.GetComponent<NetworkObject>().GlobalObjectIdHash, ownerClientId, null, position, rotation);
 
