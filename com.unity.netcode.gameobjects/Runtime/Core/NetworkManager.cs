@@ -1580,16 +1580,7 @@ namespace Unity.Netcode
                 {
                     if (IsHostlessPeer && SpawnManager.SpawnedObjects.ContainsKey(hostlessPeerId))
                     {
-                        // Connection was reset or retried
-                        // clean up stale client
-                        // var staleNetworkObject = SpawnManager.SpawnedObjects[hostlessPeerId];
-                        // var staleClientId = staleNetworkObject.OwnerClientId;
-                        // var staleClient = m_ConnectedClients[staleClientId];
-                        // m_ConnectedClientsList.Remove(staleClient);
-                        // m_ConnectedClientIds.Remove(staleClientId);
-                        // m_ConnectedClients.Remove(staleClientId);
-                        // SpawnManager.SpawnedObjects.Remove(hostlessPeerId);
-
+                       return;
                     }
 
                     var networkObject = SpawnManager.CreateLocalNetworkObject(false, playerPrefabHash ?? NetworkConfig.PlayerPrefab.GetComponent<NetworkObject>().GlobalObjectIdHash, ownerClientId, null, position, rotation);
@@ -1603,22 +1594,29 @@ namespace Unity.Netcode
                 // Server doesn't send itself the connection approved message
                 if (ownerClientId != ServerClientId)
                 {
-                    var message = new ConnectionApprovedMessage
+                    if (IsHostlessPeer)
                     {
-                        OwnerClientId = ownerClientId,
-                        NetworkTick = LocalTime.Tick
-                    };
-                    if (!NetworkConfig.EnableSceneManagement)
-                    {
-                        if (SpawnManager.SpawnedObjectsList.Count != 0)
-                        {
-                            message.SceneObjectCount = SpawnManager.SpawnedObjectsList.Count;
-                            message.SpawnedObjectsList = SpawnManager.SpawnedObjectsList;
-                        }
+                        SendConnectionRequest(ownerClientId);
                     }
+                    else
+                    {
+                        var message = new ConnectionApprovedMessage
+                        {
+                            OwnerClientId = ownerClientId,
+                            NetworkTick = LocalTime.Tick
+                        };
+                        if (!NetworkConfig.EnableSceneManagement)
+                        {
+                            if (SpawnManager.SpawnedObjectsList.Count != 0)
+                            {
+                                message.SceneObjectCount = SpawnManager.SpawnedObjectsList.Count;
+                                message.SpawnedObjectsList = SpawnManager.SpawnedObjectsList;
+                            }
+                        }
 
-                    SendMessage(message, NetworkDelivery.ReliableFragmentedSequenced, ownerClientId);
-
+                        SendMessage(message, NetworkDelivery.ReliableFragmentedSequenced, ownerClientId);
+                    }
+                   
                     // If scene management is enabled, then let NetworkSceneManager handle the initial scene and NetworkObject synchronization
                     if (!NetworkConfig.EnableSceneManagement)
                     {
